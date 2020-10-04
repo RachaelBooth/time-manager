@@ -1,20 +1,32 @@
 import { Box, Button, List, ListItem, ListItemText, TextField } from '@material-ui/core';
 import React, { ReactElement } from 'react';
-
-// QQ this is very placeholdery
-interface Task {
-    id: number,
-    title: string
-}
+import { Task } from './task';
 
 // QQ types
-class Tasks extends React.Component<any, { new: string, tasks: Task[] }> {
+class Tasks extends React.Component<any, { new: string, tasks: Task[], ready: boolean }> {
+    private api: any; // qq type
+    
     constructor(props: any) {
         super(props)
+        // qq types
+        console.log(window);
+        this.api = (window as any).api;
         this.state = {
             new: "",
-            tasks: [{ id: 0, title: "dummy task" }]
-        }
+            tasks: [],
+            ready: false
+        };
+        this.fetchTasks();
+    }
+
+    // QQ handle errors
+    private async fetchTasks(): Promise<void> {
+        let tasks = await this.api.invoke('get-tasks');
+        this.setState({
+            new: "",
+            tasks: tasks,
+            ready: true
+        });
     }
 
     // qq

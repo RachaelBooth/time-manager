@@ -1,5 +1,8 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
+import 'reflect-metadata';
+import TasksService from './tasks-service';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: any;
+declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -11,6 +14,12 @@ const createWindow = (): void => {
   const mainWindow = new BrowserWindow({
     height: 600,
     width: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+    }
   });
 
   // and load the index.html of the app.
@@ -18,6 +27,14 @@ const createWindow = (): void => {
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
+  // QQ put this somewhere better, and make registration nice for large numbers of things
+  let tasksService = new TasksService();
+
+  ipcMain.handle('get-tasks', async (event, args) => {
+    const tasks = await tasksService.getTasks();
+    return tasks;
+  })
 };
 
 // This method will be called when Electron has finished
