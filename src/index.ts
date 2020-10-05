@@ -34,7 +34,12 @@ const createWindow = (): void => {
   ipcMain.handle('get-tasks', async (event, args) => {
     const tasks = await tasksService.getTasks();
     return tasks;
-  })
+  });
+
+  ipcMain.handle('create-task', async (event, args) => {
+    const id = await tasksService.createTask(args);
+    return id;
+  });
 };
 
 // This method will be called when Electron has finished

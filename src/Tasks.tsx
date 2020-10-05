@@ -37,10 +37,11 @@ class Tasks extends React.Component<any, { new: string, tasks: Task[], ready: bo
         });
     }
 
-    saveNewTask() {
-        // QQ - doesn't work once you can delete, but deal with db first then this won't matter
-        let id = this.state.tasks.length;
-        let newTask = { id: id, title: this.state.new };
+    async saveNewTask() {
+        // qq appropriate display while waiting
+        let title = this.state.new;
+        let id = await this.api.invoke('create-task', title);
+        let newTask = { id: id, title: title };
         this.setState({
             new: "",
             tasks: [...this.state.tasks, newTask]
@@ -64,7 +65,7 @@ class Tasks extends React.Component<any, { new: string, tasks: Task[], ready: bo
                 }))}
             </List>
             <TextField id="new-task" label="Add Task" value={this.state.new} onChange={(event) => this.handleChange(event)} />
-            <Button variant="contained" color="primary" onClick={() => this.saveNewTask()}>Save</Button>
+            <Button variant="contained" color="primary" onClick={async () => this.saveNewTask()}>Save</Button>
             </Box>
         )
     }
